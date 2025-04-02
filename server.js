@@ -70,5 +70,36 @@ app.post("/register", async (req, res) => {
 });
 
 
+// Login User
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+  
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+  
+    try {
+      const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+      if (userResult.rows.length === 0) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+  
+      const user = userResult.rows[0];
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ error: "Incorrect password" });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: "Login successful",
+        user: { id: user.id, role: user.role, name: user.name, email: user.email },
+      });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

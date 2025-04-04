@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import SignPage from "./SignPage";
 import HomePage from "./frontend/home_page.jsx";
 import ShopPage from "./frontend/ShopPage.jsx";
-import ContactUs from "./contactus_page.jsx";
+import ContactUs from "./frontend/contactus_page.jsx";
 // import AdminDashboard from "./Admin/Admin_dash.jsx"; // Ensure correct path
 // import "./index.css"; // Ensure styles are included
 

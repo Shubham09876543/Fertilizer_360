@@ -1,9 +1,29 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Toggle dropdown on click
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav style={styles.navbar}>
@@ -17,16 +37,16 @@ const Navbar = () => {
         <li><Link to="/about" style={styles.link}>About</Link></li>
         <li><Link to="/contact" style={styles.link}>Contact</Link></li>
       </ul>
-      <div
-        style={styles.accountContainer}
-        onMouseEnter={() => setIsDropdownOpen(true)}
-        onMouseLeave={() => setIsDropdownOpen(false)}
-      >
-        <span style={styles.icon}>👤</span>
-        <Link to="/account" style={styles.link}>My Account</Link>
+      
+      {/* Account Dropdown */}
+      <div style={styles.accountContainer} ref={dropdownRef}>
+        <button onClick={toggleDropdown} style={styles.accountButton}>
+          👤 My Account ▼
+        </button>
+        
         {isDropdownOpen && (
           <div style={styles.dropdown}>
-            <Link to="/profile" style={styles.dropdownContent}>Profile</Link>
+            <Link to="/profile" style={styles.dropdownContent}>My Profile</Link>
             <div style={styles.dropdownContent} onClick={() => alert("Logging out...")}>Log Out</div>
           </div>
         )}
@@ -71,24 +91,29 @@ const styles = {
     fontWeight: "500",
   },
   accountContainer: {
-    display: "flex",
-    zIndex: 1,
-    alignItems: "center",
     position: "relative",
     cursor: "pointer",
   },
-  icon: {
-    marginRight: "8px",
-    fontSize: "18px",
+  accountButton: {
+    background: "none",
+    border: "none",
+    fontSize: "16px",
+    fontWeight: "500",
+    cursor: "pointer",
   },
   dropdown: {
+    zIndex: 5,
     position: "absolute",
     top: "100%",
     right: 0,
     backgroundColor: "white",
-    boxShadow: "0px 8px 16px 0px rgba(0,0,0,0.2)",
+    boxShadow: "0px 8px 16px rgba(0,0,0,0.2)",
     borderRadius: "5px",
     overflow: "hidden",
+    minWidth: "150px",
+    display: "flex",
+    flexDirection: "column",
+    animation: "fadeIn 0.2s ease-in-out",
   },
   dropdownContent: {
     padding: "10px 15px",
@@ -96,8 +121,10 @@ const styles = {
     textDecoration: "none",
     color: "#333",
     display: "block",
+    textAlign: "left",
+    backgroundColor: "white",
+    borderBottom: "1px solid #ddd",
   },
-  
 };
 
 export default Navbar;

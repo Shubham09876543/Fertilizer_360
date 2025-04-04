@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-// import logo from "./assets/logo.png"; // Adjust the path to your logo image
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -11,11 +8,11 @@ const Navbar = () => {
   return (
     <nav style={styles.navbar}>
       <div style={styles.logoContainer}>
-        <img src="src\assets\logo.png" alt="Fertilizer360 Logo" style={styles.logo} />
+        <img src={logo} alt="Fertilizer360 Logo" style={styles.logo} />
         <h1 style={styles.logoText}>Fertilizer360</h1>
       </div>
       <ul style={styles.navLinks}>
-        <li><Link to="/home-page" style={styles.link}>Home</Link></li>
+        <li><Link to="/" style={styles.link}>Home</Link></li>
         <li><Link to="/shop" style={styles.link}>Shop</Link></li>
         <li><Link to="/about" style={styles.link}>About</Link></li>
         <li><Link to="/contact" style={styles.link}>Contact</Link></li>
@@ -100,6 +97,7 @@ const styles = {
     color: "#333",
     display: "block",
   },
+  
 };
 
 export default Navbar;

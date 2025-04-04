@@ -13,7 +13,7 @@
   
   .hero-image {
     width: 100%;
-    height: 450px;
+    height: 100%;
     object-fit: cover;
   }
   
@@ -73,9 +73,9 @@
   
   /* Product Grid */
   .product-grid {
-    display: grid;
+    display:flex;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 40px;
+    gap: 130px;
     justify-content: center;
     align-items: center;
     max-width: 800px;
@@ -91,6 +91,8 @@
     height: 200px;
     border-radius: 10px;
     margin-bottom: 10px;
+    /* display: flex; */
+    /* justify-content:space-evenly; */
   }
   
   .product-name {

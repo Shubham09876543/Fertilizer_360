@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import SignPage from "./SignPage";
 import HomePage from "./frontend/home_page.jsx";
 import ShopPage from "./frontend/ShopPage.jsx";
+import ContactUs from "./contactus_page.jsx";
 // import AdminDashboard from "./Admin/Admin_dash.jsx"; // Ensure correct path
 // import "./index.css"; // Ensure styles are included
 
@@ -18,7 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         {/* <Route path="/signup" element={<SignPage />} /> */}
         {/* <Route path="/admin/*" element={<AdminDashboard />} />  */}
         <Route path="/" element={<HomePage />} />
-        {/* <Route path="/contact" element={<ContactUs />} /> */}
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/shop" element={<ShopPage />} />
         {/* <Route path="/about" element={<About />} />
         <Route path="/shop/:id" element={<ShopDetails />} />

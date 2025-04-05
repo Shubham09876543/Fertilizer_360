@@ -41,7 +41,7 @@ const Navbar = () => {
       {/* Account Dropdown */}
       <div style={styles.accountContainer} ref={dropdownRef}>
         <button onClick={toggleDropdown} style={styles.accountButton}>
-          👤 My Account ▼
+          👤 My Account 
         </button>
         
         {isDropdownOpen && (

@@ -79,10 +79,13 @@ const Footer = () => {
       fontSize: "16px",
       fontWeight: "bold",
       color: "#000",
+      display: "flex"
     },
     text: {
       color: "#555",
       margin: "5px 0",
+      display: "flex"
+
     },
     subscribeContainer: {
       display: "flex",

@@ -7,6 +7,7 @@ import HomePage from "./frontend/home_page.jsx";
 import ShopPage from "./frontend/ShopPage.jsx";
 import ContactUs from "./frontend/contactus_page.jsx";
 import About from "./frontend/About.jsx";
+import UserProfilePage from "./frontend/ProfilePage.jsx";
 // import AdminDashboard from "./Admin/Admin_dash.jsx"; // Ensure correct path
 // import "./index.css"; // Ensure styles are included
 
@@ -27,7 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         {/* <Route path="/shop/:id" element={<ShopDetails />} />
         <Route path="/fertilizer/:id" element={<FertilizerDetails />} />
         <Route path="/fertilizer/:id/advance_booking" element={<AdvanceBooking />} />  */}
-        {/* <Route path="/profile" element={<ProfilePage />} />  */}
+        <Route path="/profile" element={<UserProfilePage/>} /> 
       </Routes>
     </Router>
   </React.StrictMode>

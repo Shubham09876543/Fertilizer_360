@@ -8,6 +8,7 @@ import ShopPage from "./frontend/ShopPage.jsx";
 import ContactUs from "./frontend/contactus_page.jsx";
 import About from "./frontend/About.jsx";
 import UserProfilePage from "./frontend/ProfilePage.jsx";
+import OtpVerifyPage from "./otp_page.jsx";
 // import AdminDashboard from "./Admin/Admin_dash.jsx"; // Ensure correct path
 // import "./index.css"; // Ensure styles are included
 
@@ -29,6 +30,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/fertilizer/:id" element={<FertilizerDetails />} />
         <Route path="/fertilizer/:id/advance_booking" element={<AdvanceBooking />} />  */}
         <Route path="/profile" element={<UserProfilePage/>} /> 
+        {/* <Route path="/" element={<OtpVerifyPage/>} />  */}
+
       </Routes>
     </Router>
   </React.StrictMode>

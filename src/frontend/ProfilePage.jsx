@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "./navbar";
 import Footer from "./footer";
+import "./CSS/ProfilePage.css"; // Ensure this path is correct
 
 export default function UserProfilePage() {
   const [user, setUser] = useState(null);

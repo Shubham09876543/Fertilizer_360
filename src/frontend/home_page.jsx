@@ -30,7 +30,7 @@ const HomePage = () => {
       <section className="hero-section">
         <img
           src="https://t4.ftcdn.net/jpg/02/44/02/17/360_F_244021725_GsYLozplO0VH7oI5ONClebHBAN8RiHbo.jpg"
-          alt="Fertilizer Field"
+          alt="Hero"
           className="hero-image"
         />
         <div className="hero-overlay">

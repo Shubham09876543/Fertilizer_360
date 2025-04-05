@@ -1,180 +1,186 @@
 /* General Styles */
 .home-container {
-    font-family: Arial, sans-serif;
-    overflow-x: hidden;
-  }
-  
-  /* Hero Section */
-  .hero-section {
-    position: relative;
-    color: white;
-    overflow-x: hidden;
-  }
-  
-  .hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding-left: 50px;
-  }
-  
-  .hero-text {
-    font-size: 20px;
-    font-weight: 500;
-  }
-  
-  .hero-subtext {
-    font-size: 16px;
-    margin-top: 5px;
-  }
-  
-  .hero-button {
-    margin-top: 55px;
-    background-color: #ffcc00;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  /* Product Section */
-  .product-section {
-    text-align: center;
-    padding: 40px 20px;
-  }
-  
-  .product-description {
-    color: #555;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .product-heading {
-    font-size: 24px;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 30px;
-  }
-  
-  /* Product Grid */
-  .product-grid {
-    display:flex;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 130px;
-    justify-content: center;
-    align-items: center;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .product-item {
-    text-align: center;
-  }
-  
-  .product-image {
-    width: 200px;
-    height: 200px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    /* display: flex; */
-    /* justify-content:space-evenly; */
-  }
-  
-  .product-name {
-    font-weight: 600;
-    font-size: 18px;
-    margin: 10px 0;
-  }
-  
-  /* Main Section */
-  .main-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 50px;
-    background-color: #fdfbf6;
-  }
-  
-  .main-text {
-    max-width: 40%;
-  }
-  
-  .main-text h2 {
-    font-size: 32px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .main-text p {
-    color: #555;
-    margin-top: 10px;
-    font-size: 16px;
-  }
-  
-  .explore-button {
-    margin-top: 20px;
-    background-color: #c89f5d;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  .explore-button:hover {
-    background: #b7894f;
-  }
-  
-  /* Image Slider */
-  .slider-container {
-    position: relative;
-    width: 500px;  /* Set a fixed width */
-    height: 300px; /* Set a fixed height */
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .slider-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain; /* Ensures the whole image is visible while keeping aspect ratio */
-  }
-  
-  .slider-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    font-size: 24px;
-  }
-  
-  .slider-button.left {
-    left: 10px;
-  }
-  
-  .slider-button.right {
-    right: 10px;
-  }
-  
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 450px; /* Full screen height */
+  overflow: hidden;
+}
+
+.hero-image {
+  width: 100%;
+  height: 90vh;
+  object-fit: cover;
+  /* display: flex; */
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 50px;
+  box-sizing: border-box;
+}
+
+.hero-text {
+  font-size: 2rem;
+  font-weight: 500;
+  color: white;
+}
+
+.hero-subtext {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #ddd;
+}
+
+.hero-button {
+  margin-top: 40px;
+  background-color: #ffcc00;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Product Section */
+.product-section {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.product-description {
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.product-heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+/* Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.product-item {
+  text-align: center;
+}
+
+.product-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+.product-name {
+  font-weight: 600;
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+/* Main Section */
+.main-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px;
+  background-color: #fdfbf6;
+  flex-wrap: wrap;
+}
+
+.main-text {
+  max-width: 40%;
+}
+
+.main-text h2 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+}
+
+.main-text p {
+  color: #555;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.explore-button {
+  margin-top: 20px;
+  background-color: #c89f5d;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.explore-button:hover {
+  background: #b7894f;
+}
+
+/* Image Slider */
+.slider-container {
+  position: relative;
+  width: 500px;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.slider-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 24px;
+}
+
+.slider-button.left {
+  left: 10px;
+}
+
+.slider-button.right {
+  right: 10px;
+}

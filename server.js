@@ -101,5 +101,74 @@ app.post("/login", async (req, res) => {
     }
   });
 
+
+  
+// Add a new shop
+app.post("/shops", async (req, res) => {
+  const { name, image, address, phone_number, work_time, description, state, district, village_or_taluka } = req.body;
+
+  if (!name || !address || !phone_number || !state || !district || !village_or_taluka) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO shops (name, image, address, phone_number, work_time, description, state, district, village_or_taluka) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [name, image, address, phone_number, work_time, description, state, district, village_or_taluka]
+    );
+    res.status(201).json({ message: "Shop added successfully", shop: result.rows[0] });
+  } catch (error) {
+    console.error("Error adding shop:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// Get all shops
+app.get("/shops", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM shops ORDER BY created_at DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching shops:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get a single shop by ID
+app.get("/shops/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM shops WHERE id = $1", [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: "Shop not found" });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching shop:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Update a shop
+app.put("/shops/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, image, address, phone_number, work_time, description, state, district, village_or_taluka } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE shops SET name=$1, image=$2, address=$3, phone_number=$4, work_time=$5, description=$6, 
+      state=$7, district=$8, village_or_taluka=$9 WHERE id=$10 RETURNING *`,
+      [name, image, address, phone_number, work_time, description, state, district, village_or_taluka, id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Shop not found" });
+    res.json({ message: "Shop updated successfully", shop: result.rows[0] });
+  } catch (error) {
+    console.error("Error updating shop:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

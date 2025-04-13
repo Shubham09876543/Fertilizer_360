@@ -13,25 +13,46 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { role, email, password } = formData;
+
+    if (!role || !email || !password) {
+      setMessage("Please fill in all fields.");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:5000/login", formData);
-      setMessage(response.data.message);
-      
+      const user = response.data.user;
+
       if (response.data.success) {
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Save user session
-        
-        // Redirect based on role
-        if (response.data.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/home-page");
+        if (user.role !== role) {
+          setMessage(`Incorrect role selected. This account is registered as "${user.role}".`);
+          return;
         }
+
+        localStorage.setItem("user", JSON.stringify(user));
+
+        switch (user.role) {
+          case "admin":
+            navigate("/admin");
+            break;
+          case "shop_keeper":
+            navigate("/shopkeeper-dash");
+            break;
+          case "user":
+            navigate("/home-page");
+            break;
+          default:
+            setMessage("Invalid role. Please contact support.");
+        }
+      } else {
+        setMessage("Invalid credentials.");
       }
     } catch (error) {
-      setMessage(error.response?.data?.error || "Login failed");
+      setMessage(error.response?.data?.error || "Login failed. Try again.");
     }
   };
-  
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 md:flex-row">
@@ -41,7 +62,6 @@ const LoginPage = () => {
           <p className="mb-6 text-gray-600">Know Before You Go: Real-Time Fertilizer Stock Alerts.</p>
 
           <h2 className="mb-4 text-xl font-semibold">Welcome back!</h2>
-
           {message && <p className="text-center text-red-500">{message}</p>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -53,7 +73,7 @@ const LoginPage = () => {
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md focus:ring focus:ring-green-300"
               >
-                <option value="">Select Option</option>
+                <option value="">Select Role</option>
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
                 <option value="shop_keeper">Shop Keeper</option>
@@ -84,7 +104,17 @@ const LoginPage = () => {
               />
             </div>
 
-            <button type="submit" className="w-full py-2 text-white transition bg-green-700 rounded-md hover:bg-green-800">
+            {/* Forgot password link aligned right */}
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-2 text-white transition bg-green-700 rounded-md hover:bg-green-800"
+            >
               Login
             </button>
           </form>
@@ -99,7 +129,7 @@ const LoginPage = () => {
       </div>
 
       <div className="hidden w-1/2 bg-green-100 md:block">
-        <img src="src/assets/SignPage.jpeg" alt="Fertilizers" className="object-cover w-full h-full" />
+        <img src="src/assets/SignPage.png" alt="Fertilizers" className="object-cover w-full h-full" />
       </div>
     </div>
   );

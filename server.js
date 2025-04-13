@@ -255,5 +255,39 @@ app.delete("/api/users/:id", async (req, res) => {
 });
 
 
+
+// Update user profile
+app.post("/api/update-profile", async (req, res) => {
+  const { email, name, currentPassword, newPassword } = req.body;
+
+  try {
+    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userResult.rows.length === 0) return res.status(404).json({ error: "User not found" });
+
+    const user = userResult.rows[0];
+
+    if (currentPassword && newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) return res.status(401).json({ error: "Incorrect current password" });
+
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      await pool.query("UPDATE users SET name = $1, password = $2 WHERE email = $3", [
+        name,
+        hashedNewPassword,
+        email,
+      ]);
+    } else {
+      await pool.query("UPDATE users SET name = $1 WHERE email = $2", [name, email]);
+    }
+
+    res.json({ success: true, message: "Profile updated successfully!" });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

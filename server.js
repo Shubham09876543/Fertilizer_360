@@ -169,6 +169,27 @@ app.put("/shops/:id", async (req, res) => {
 });
 
 
+// Delete a shop
+app.delete("/shops/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // First, check if the shop exists
+    const check = await pool.query("SELECT * FROM shops WHERE id = $1", [id]);
+    if (check.rows.length === 0) {
+      return res.status(404).json({ error: "Shop not found" });
+    }
+
+    // Delete the shop
+    await pool.query("DELETE FROM shops WHERE id = $1", [id]);
+
+    res.json({ message: "Shop deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting shop:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

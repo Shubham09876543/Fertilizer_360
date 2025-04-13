@@ -289,5 +289,99 @@ app.post("/api/update-profile", async (req, res) => {
 
 
 
+// Multer setup for image uploads
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+  },
+});
+const upload = multer({ storage });
+
+// Get all fertilizers
+app.get("/fertilizers", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT f.*, s.name AS shop_name FROM fertilizers f
+      JOIN shops s ON f.shop_id = s.id
+      ORDER BY f.id DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching fertilizers:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Add a new fertilizer
+app.post("/fertilizers", upload.single("image"), async (req, res) => {
+  const { shop_id, name, price, description, stocks } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+  if (!shop_id || !name || !price || !description || !stocks) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO fertilizers (shop_id, name, image, price, description, stocks) 
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [shop_id, name, image, price, description, stocks]
+    );
+
+    res.status(201).json({ message: "Fertilizer added successfully", fertilizer: result.rows[0] });
+  } catch (error) {
+    console.error("Error adding fertilizer:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Edit a fertilizer
+app.put("/fertilizers/:id", upload.single("image"), async (req, res) => {
+  const { id } = req.params;
+  const { shop_id, name, price, description, stocks } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+  try {
+    const existingFertilizer = await pool.query("SELECT * FROM fertilizers WHERE id = $1", [id]);
+    if (existingFertilizer.rows.length === 0) {
+      return res.status(404).json({ error: "Fertilizer not found" });
+    }
+
+    const updatedFertilizer = await pool.query(
+      `UPDATE fertilizers 
+       SET shop_id = $1, name = $2, image = COALESCE($3, image), price = $4, description = $5, stocks = $6
+       WHERE id = $7 RETURNING *`,
+      [shop_id, name, image, price, description, stocks, id]
+    );
+
+    res.json({ message: "Fertilizer updated successfully", fertilizer: updatedFertilizer.rows[0] });
+  } catch (error) {
+    console.error("Error updating fertilizer:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete a fertilizer
+app.delete("/fertilizers/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query("DELETE FROM fertilizers WHERE id = $1 RETURNING *", [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Fertilizer not found" });
+    }
+    res.json({ message: "Fertilizer deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting fertilizer:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//-----------------
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

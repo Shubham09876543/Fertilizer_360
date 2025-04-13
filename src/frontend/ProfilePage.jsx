@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "./navbar";
 import Footer from "./footer";
-import "./CSS/ProfilePage.css"; // Ensure this path is correct
 
 export default function UserProfilePage() {
   const [user, setUser] = useState(null);
@@ -48,15 +47,17 @@ export default function UserProfilePage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   if (!user) return <p className="mt-10 text-center">Loading...</p>;
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="relative flex flex-col items-center w-full min-h-screen bg-gray-100">
+
+      {/* Page Content */}
+      <div className="relative flex flex-col items-center flex-grow bg-gray-100">
         {/* Logout Button */}
         <button
           onClick={handleLogout}
@@ -65,13 +66,12 @@ export default function UserProfilePage() {
           Logout
         </button>
 
-        {/* Profile Container */}
-        <div className="p-8 mt-16 text-center bg-white rounded-lg shadow-lg w-96">
-          <img src="/profile-avatar.png" alt="Profile" className="w-20 h-20 mx-auto mb-4" />
+        {/* Profile Box */}
+        <div className="p-8 mt-16 mb-10 text-center bg-white rounded-lg shadow-lg w-96">
+          <img src="src/assets/logo.png" alt="Profile" className="w-20 h-20 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold">{user.name}</h2>
           <p className="mb-4 text-gray-500">{user.email}</p>
 
-          {/* Form */}
           <div className="text-left">
             <label className="block font-medium text-gray-700">Full Name</label>
             <input
@@ -112,7 +112,6 @@ export default function UserProfilePage() {
             )}
           </div>
 
-          {/* Update Button */}
           <button
             onClick={handleUpdateProfile}
             className="w-full py-2 mt-4 text-white transition bg-green-500 rounded hover:bg-green-600"
@@ -121,6 +120,7 @@ export default function UserProfilePage() {
           </button>
         </div>
       </div>
+
       <Footer />
     </div>
   );

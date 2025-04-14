@@ -383,5 +383,27 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 
+
+
+app.get("/filters", async (req, res) => {
+  try {
+    const states = await pool.query("SELECT DISTINCT state FROM shops");
+    const districts = await pool.query("SELECT DISTINCT district, state FROM shops");
+    const cities = await pool.query("SELECT DISTINCT village_or_taluka, district FROM shops");
+
+    res.json({
+      states: states.rows.map(row => row.state),
+      districts: districts.rows.map(row => ({ name: row.district, state: row.state })),
+      cities: cities.rows.map(row => ({ name: row.village_or_taluka, district: row.district }))
+    });
+  } catch (error) {
+    console.error("Error fetching filters:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

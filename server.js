@@ -594,6 +594,77 @@ const transporter = nodemailer.createTransport({
 
 
 
+// === FORGOT PASSWORD ROUTE ===
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 3600000); // 1 hour
+
+    await pool.query(
+      'UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3',
+      [token, expires, email]
+    );
+
+    const resetLink = `http://localhost:5173/reset-password/${token}`;
+
+    await transporter.sendMail({
+      to: email,
+      subject: 'Password Reset',
+      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 1 hour.</p>`,
+    });
+
+    res.status(200).json({ message: 'Reset link sent to your email' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+// === RESET PASSWORD ROUTE ===
+app.post('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  if (!password || password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()',
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Token is invalid or expired' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(
+      'UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE reset_token = $2',
+      [hashedPassword, token]
+    );
+
+    res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

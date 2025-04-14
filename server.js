@@ -476,6 +476,71 @@ app.get("/fertilizer/:id", async (req, res) => {
 
 
 
+// 🚀 PLACE ORDER
+app.post("/place-order", async (req, res) => {
+  const { customer_name, customer_email, fertilizer_name, quantity, total_price } = req.body;
+  if (!customer_name || !customer_email || !fertilizer_name || !quantity || !total_price) {
+      return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+      await pool.query(
+          "INSERT INTO orders (customer_name, customer_email, fertilizer_name, quantity, total_price) VALUES ($1, $2, $3, $4, $5)",
+          [customer_name, customer_email, fertilizer_name, quantity, total_price]
+      );
+      res.status(201).json({ message: "Order placed successfully!" });
+  } catch (error) {
+      console.error("Error placing order:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+// 📌 GET ALL ORDERS (For Admin Panel)
+app.get("/orders", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM orders ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ✏ UPDATE ORDER STATUS
+app.put("/orders/:id", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ error: "Status is required" });
+  }
+
+  try {
+    await pool.query("UPDATE orders SET status = $1 WHERE id = $2", [status, id]);
+    res.json({ message: "Order status updated successfully" });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// 🗑 DELETE ORDER
+app.delete("/orders/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await pool.query("DELETE FROM orders WHERE id = $1", [id]);
+    res.json({ message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

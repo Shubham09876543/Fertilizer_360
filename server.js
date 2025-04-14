@@ -6,10 +6,13 @@ import cors from "cors";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
+import nodemailer from "nodemailer";
+import crypto from 'crypto';
+import Razorpay from "razorpay";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 dotenv.config();
 const { Pool } = pg;
@@ -69,40 +72,38 @@ app.post("/register", async (req, res) => {
   }
 });
 
-
 // Login User
 app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-  
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  try {
+    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ error: "Invalid credentials" });
     }
-  
-    try {
-      const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-      if (userResult.rows.length === 0) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-  
-      const user = userResult.rows[0];
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).json({ error: "Incorrect password" });
-      }
-  
-      res.status(200).json({
-        success: true,
-        message: "Login successful",
-        user: { id: user.id, role: user.role, name: user.name, email: user.email },
-      });
-    } catch (error) {
-      console.error("Error logging in:", error);
-      res.status(500).json({ error: "Internal server error" });
+
+    const user = userResult.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Incorrect password" });
     }
-  });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: { id: user.id, role: user.role, name: user.name, email: user.email },
+    });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
-  
 // Add a new shop
 app.post("/shops", async (req, res) => {
   const { name, image, address, phone_number, work_time, description, state, district, village_or_taluka } = req.body;
@@ -123,7 +124,6 @@ app.post("/shops", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 // Get all shops
 app.get("/shops", async (req, res) => {
@@ -168,7 +168,6 @@ app.put("/shops/:id", async (req, res) => {
   }
 });
 
-
 // Delete a shop
 app.delete("/shops/:id", async (req, res) => {
   const { id } = req.params;
@@ -189,9 +188,6 @@ app.delete("/shops/:id", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
 
 // Fetch all users
 app.get("/api/users", async (req, res) => {
@@ -254,8 +250,6 @@ app.delete("/api/users/:id", async (req, res) => {
   }
 });
 
-
-
 // Update user profile
 app.post("/api/update-profile", async (req, res) => {
   const { email, name, currentPassword, newPassword } = req.body;
@@ -286,7 +280,6 @@ app.post("/api/update-profile", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 
 // Multer setup for image uploads
@@ -385,6 +378,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 
+
 app.get("/filters", async (req, res) => {
   try {
     const states = await pool.query("SELECT DISTINCT state FROM shops");
@@ -403,20 +397,11 @@ app.get("/filters", async (req, res) => {
 });
 
 
-// Fetch a single shop by ID
-app.get("/shop/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query("SELECT * FROM shops WHERE id = $1", [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Shop not found" });
-    }
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error("Error fetching shop details:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+
+
+
+
+
 
 
 
@@ -473,6 +458,11 @@ app.get("/fertilizer/:id", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
+
+
 
 
 
@@ -540,6 +530,13 @@ app.delete("/orders/:id", async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
 // POST route to send email
 app.post('/send', async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -591,9 +588,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MY_PASS,
   },
 });
-
-
-
 // === FORGOT PASSWORD ROUTE ===
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
@@ -662,6 +656,71 @@ app.post('/reset-password/:token', async (req, res) => {
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
+
+
+
+
+// Update fertilizer stock after order
+app.put("/fertilizer/:id/update-stock", async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    const current = await pool.query("SELECT stocks FROM fertilizers WHERE id = $1", [id]);
+
+    if (current.rows.length === 0) {
+      return res.status(404).json({ error: "Fertilizer not found" });
+    }
+
+    const currentStock = parseInt(current.rows[0].stocks);
+    const newStock = currentStock - parseInt(quantity);
+
+    if (newStock < 0) {
+      return res.status(400).json({ error: "Not enough stock available" });
+    }
+
+    const result = await pool.query(
+      "UPDATE fertilizers SET stocks = $1 WHERE id = $2 RETURNING *",
+      [newStock, id]
+    );
+
+    res.json({ message: "Stock updated", fertilizer: result.rows[0] });
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
+//razor pay
+const razorpay = new Razorpay({
+  key_id: "YOUR_RAZORPAY_KEY_ID",
+  key_secret: "YOUR_RAZORPAY_SECRET",
+});
+
+app.post("/create-razorpay-order", async (req, res) => {
+  const { amount } = req.body;
+
+  const options = {
+    amount: amount,
+    currency: "INR",
+    receipt: "order_rcptid_" + Math.random(),
+  };
+
+  try {
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (err) {
+    console.error("Error creating Razorpay order:", err);
+    res.status(500).json({ error: "Failed to create Razorpay order" });
+  }
+});
+
+
+
+
 
 
 

@@ -540,6 +540,59 @@ app.delete("/orders/:id", async (req, res) => {
 });
 
 
+// POST route to send email
+app.post('/send', async (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MY_EMAIL, // Your Gmail address
+        pass: process.env.MY_PASS   // Your Gmail App Password
+      }
+    });
+
+    const mailOptions = {
+      from: email,
+      to: 'sgajera934@rku.ac.in',
+      subject: subject || 'Contact Form Submission',
+      html: `
+        <h2>Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong><br/>${message}</p>
+      `
+    };
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Email sent successfully!' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to send email' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MY_EMAIL,
+    pass: process.env.MY_PASS,
+  },
+});
+
+
 
 
 const PORT = process.env.PORT || 5000;

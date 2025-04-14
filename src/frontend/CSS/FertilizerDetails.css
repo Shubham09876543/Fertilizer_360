@@ -1,0 +1,121 @@
+.fertilizer-main-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 10%;
+  gap: 50px;
+  background-color: #fff;
+}
+
+.fertilizer-image-section img.fertilizer-img {
+  width: 300px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.fertilizer-content-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+}
+
+.fertilizer-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #111;
+}
+
+.fertilizer-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #888;
+}
+
+.fertilizer-description {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.fertilizer-stock {
+  display: flex;
+  gap: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #111;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: fit-content;
+  padding: 10px 20px;
+}
+
+.stock-number {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.quantity-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.quantity-wrapper button {
+  width: 45px;
+  height: 45px;
+  font-size: 22px;
+  font-weight: bold;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.quantity-wrapper button:hover {
+  background-color: #f0f0f0;
+}
+
+.advance-booking-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 10px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  color: #111;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.advance-booking-btn:hover {
+  background-color: #ddd;
+}
+
+@media (max-width: 768px) {
+  .fertilizer-main-container {
+    flex-direction: column;
+    padding: 30px 5%;
+  }
+
+  .fertilizer-content-section {
+    align-items: center;
+    text-align: center;
+  }
+
+  .fertilizer-image-section img.fertilizer-img {
+    width: 80%;
+  }
+
+  .fertilizer-stock {
+    justify-content: center;
+  }
+
+  .quantity-wrapper {
+    justify-content: center;
+  }
+}

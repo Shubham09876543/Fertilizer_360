@@ -420,5 +420,62 @@ app.get("/shop/:id", async (req, res) => {
 
 
 
+
+
+// Fetch a single shop by ID
+app.get("/shop/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM shops WHERE id = $1", [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Shop not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching shop details:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Fetch fertilizers for a specific shop
+app.get("/fertilizers/:shopId", async (req, res) => {
+  const { shopId } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT * FROM fertilizers WHERE shop_id = $1",
+      [shopId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching fertilizers:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
+
+
+
+// 🧪 Get Fertilizer Details by ID
+app.get("/fertilizer/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT * FROM fertilizers WHERE id = $1", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Fertilizer not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching fertilizer:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

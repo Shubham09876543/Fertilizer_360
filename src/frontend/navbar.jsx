@@ -32,7 +32,7 @@ const Navbar = () => {
         <h1 style={styles.logoText}>Fertilizer360</h1>
       </div>
       <ul style={styles.navLinks}>
-        <li><Link to="/" style={styles.link}>Home</Link></li>
+        <li><Link to="/home-page" style={styles.link}>Home</Link></li>
         <li><Link to="/shop" style={styles.link}>Shop</Link></li>
         <li><Link to="/about" style={styles.link}>About</Link></li>
         <li><Link to="/contact" style={styles.link}>Contact</Link></li>
@@ -47,7 +47,7 @@ const Navbar = () => {
         {isDropdownOpen && (
           <div style={styles.dropdown}>
             <Link to="/profile" style={styles.dropdownContent}>My Profile</Link>
-            <div style={styles.dropdownContent} onClick={() => alert("Logging out...")}>Log Out</div>
+            <Link to="/login" style={styles.dropdownContent}>Log Out</Link>
           </div>
         )}
       </div>

@@ -694,17 +694,17 @@ app.put("/fertilizer/:id/update-stock", async (req, res) => {
 
 
 
-//razor pay
+
 const razorpay = new Razorpay({
-  key_id: "YOUR_RAZORPAY_KEY_ID",
-  key_secret: "YOUR_RAZORPAY_SECRET",
+  key_id: "rzp_test_jQOReseIWUxIfd",
+  key_secret: "aEM8dA6xjVN2wE6mm16ut2Zm",
 });
 
+// Create Razorpay order (trial)
 app.post("/create-razorpay-order", async (req, res) => {
   const { amount } = req.body;
-
   const options = {
-    amount: amount,
+    amount,
     currency: "INR",
     receipt: "order_rcptid_" + Math.random(),
   };
@@ -717,6 +717,7 @@ app.post("/create-razorpay-order", async (req, res) => {
     res.status(500).json({ error: "Failed to create Razorpay order" });
   }
 });
+
 
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./navbar";
@@ -9,7 +9,19 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const { fertilizer, quantity, totalPrice } = location.state || {};
 
-  // Load Razorpay script
+  const [user, setUser] = useState({ name: "", email: "" });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!fertilizer) navigate("/shop");
+  }, [fertilizer, navigate]);
+
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -28,43 +40,40 @@ const PaymentPage = () => {
     }
 
     try {
-      // OPTIONAL: Call backend to create an order in Razorpay (if required)
       const razorpayOrder = await axios.post("http://localhost:5000/create-razorpay-order", {
-        amount: totalPrice * 100, // amount in paisa
+        amount: totalPrice * 100,
       });
 
       const options = {
-        key: "YOUR_RAZORPAY_KEY", // replace with your Razorpay public key
+        key: "rzp_test_jQOReseIWUxIfd",
         amount: totalPrice * 100,
         currency: "INR",
         name: "AgroShop",
         description: "Fertilizer Purchase",
-        image: "/logo.png", // optional
-        order_id: razorpayOrder.data.id, // from backend
+        image: "/logo.png",
+        order_id: razorpayOrder.data.id,
         handler: async function (response) {
-          // ✅ Payment success: Save order to DB
           await axios.post("http://localhost:5000/place-order", {
-            customer_name: "John Doe", // you can dynamically get from auth/user context
-            customer_email: "john@example.com",
+            customer_name: user.name,
+            customer_email: user.email,
             fertilizer_name: fertilizer.name,
             quantity,
             total_price: totalPrice,
           });
 
-          // ✅ Update stock
           await axios.put(`http://localhost:5000/fertilizer/${fertilizer.id}/update-stock`, {
             quantity,
           });
 
           alert("Payment successful and order placed!");
-          navigate("/"); // redirect
+          navigate("/shop");
         },
         prefill: {
-          name: "John Doe",
-          email: "john@example.com",
+          name: user.name,
+          email: user.email,
         },
         theme: {
-          color: "#3399cc",
+          color: "#6a1b9a",
         },
       };
 
@@ -76,18 +85,40 @@ const PaymentPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (!fertilizer) navigate("/");
-  }, [fertilizer, navigate]);
-
   return (
     <div>
       <Navbar />
-      <div style={{ textAlign: "center", padding: "40px" }}>
-        <h2>Payment Gateway</h2>
-        <p>You’re purchasing: <strong>{fertilizer?.name}</strong></p>
-        <p>Total to Pay: ₹{totalPrice}</p>
-        <button onClick={handlePayment} style={{ padding: '10px 25px', fontSize: '16px', marginTop: '20px' }}>
+      <div style={{
+        maxWidth: "600px",
+        margin: "50px auto",
+        padding: "30px",
+        boxShadow: "0 0 15px rgba(0,0,0,0.1)",
+        borderRadius: "12px",
+        background: "#fefefe",
+        textAlign: "center"
+      }}>
+        <h2 style={{ color: "#6a1b9a" }}>Secure Payment</h2>
+        <p style={{ fontSize: "18px", margin: "10px 0" }}>
+          Hello, <strong>{user.name}</strong> ({user.email})
+        </p>
+        <p style={{ fontSize: "16px", margin: "20px 0" }}>
+          You’re purchasing: <strong>{fertilizer?.name}</strong><br />
+          Quantity: <strong>{quantity}</strong><br />
+          Total Amount: <strong style={{ color: "#2e7d32" }}>₹{totalPrice}</strong>
+        </p>
+        <button
+          onClick={handlePayment}
+          style={{
+            padding: '12px 30px',
+            fontSize: '16px',
+            backgroundColor: '#6a1b9a',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            marginTop: '20px'
+          }}
+        >
           Pay with Razorpay
         </button>
       </div>

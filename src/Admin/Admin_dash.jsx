@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { FaHome, FaStore, FaLeaf, FaClipboardList, FaUsers, FaUser,} from "react-icons/fa";
+import {
+  FaHome,
+  FaStore,
+  FaLeaf,
+  FaClipboardList,
+  FaUsers,
+  FaUser,
+} from "react-icons/fa";
 import AdminShop from "./admin_shop";
 import UserManagement from "./admin_user";
 import ProfilePage from "./admin_profile";
